@@ -1,0 +1,21 @@
+---
+title: "hw1"
+author: "Evgeniy Glazunov"
+date: '6 февраля 2018 г '
+output: html_document
+---
+
+### 1.1
+```{r}
+library (tidyverse)
+df1 <- read.csv("https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw1_agreement/hw1_1_zilo_class.csv", encoding = 'UTF-8')
+as_tibble(df1)%>%
+  group_by(stimulus_source) %>% 
+  summarise(n = n())
+```
+
+
+### 2.1
+```{r}
+df2 <- read_csv("https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw1_agreement/hw1_2_verbs.csv")
+```
