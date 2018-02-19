@@ -6,6 +6,9 @@ output: html_document
 ---
 
 ### 1.1
+
+Скачайте датасет hw1_1_zilo_class.csv (см. описание выше). Получите тиббл содержащий два столбца: stimulus_source и количество уникальных слов в датасете (n).
+
 ```{r}
 library (tidyverse)
 df1 <- read.csv("https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw1_agreement/hw1_1_zilo_class.csv", encoding = 'UTF-8')
@@ -14,6 +17,9 @@ as_tibble(df1)%>%
   summarise(n = n_distinct(stimulus))
 ```
 ### 1.2
+
+Преобразуйте датасет hw1_1_zilo_class.csv. Посчитайте процент полного согласия всех спикеров.
+
 ```{r}
 library(irr)
 df1 %>% 
@@ -24,6 +30,9 @@ head(zilo_classes_short)
 agree(zilo_classes_short[,-c(1:3)])
 ```
 ### 1.3
+
+Из преобразованным датасета hw1_1_zilo_class.csv выберите спикеров с номером 7 и 11 и посчитайте для них каппу Коэна.
+
 ```{r}
 zilo_classes_2s <- zilo_classes_short[,c(10, 14)]
 agree(zilo_classes_2s)
@@ -31,6 +40,8 @@ kappa2(zilo_classes_2s)
 ```
 
 ### 1.4
+
+Посчитайте каппу Фляйса для всех спикеров преобразованного датасета hw1_1_zilo_class.csv.
 
 ```{r}
 kappam.fleiss(zilo_classes_short[,-c(1:3)])
@@ -43,6 +54,9 @@ kappam.fleiss(zilo_classes_short[,-c(1:3)])
 В анализируемой выборке 42 заимствованных слова и 47 исконных. Процент согласия между респондентами довольно высок и соствляет 74.2%. Мера согласия также оценивалась с помощью каппы Коэна и каппы Фляйса. Для спикеров 7 и 11 каппа Коэна составляет 0.865, что говорит о достаточно согласованных ответах. Каппа Фляйса для всех спикеров равна 0.854, что также подтверждает высокую степень согласованности среди информантов.
 
 ### 2.1
+
+Скачайте датасет hw1_2_verbs.csv (см. описание выше). Посчитайте количество участников в датасете (в ответ выведите тибл с переменной n).
+
 ```{r}
 df2 <- read_csv("https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw1_agreement/hw1_2_verbs.csv")
 as_tibble(df2)%>%
@@ -50,6 +64,9 @@ as_tibble(df2)%>%
 ```
 
 ### 2.2
+
+Посчитайте среднюю оценку глаголов разного типа для каждого пола в датасете (в ответ выведите тибл с переменными WordType, Gender и mean).
+
 ```{r}
 as_tibble(df2)%>%
   group_by(WordType, Gender)%>%
@@ -57,6 +74,9 @@ as_tibble(df2)%>%
 ```
 
 ### 2.3
+
+Преобразуйте датасет в короткий формат и удалите строки, в которых есть пропущенные значения (у меня вышел тибл 59 x 124). Посчитайте процент полного согласия.
+
 ```{r}
 w <- na.omit(df2)
 df2 %>% 
@@ -67,17 +87,27 @@ head(zilo_classes_short)
 df2_short <- na.omit(df2_short)
 agree(df2_short[,-c(1)])
 ```
+
 ### 2.4
+
+Посчитайте каппу Фляйса для преобразованного датасета.
+
 ```{r}
 kappam.fleiss(df2_short[,-c(1)])
 ```
 
 ### 2.5
+
+Посчитайте ICC для преобразованного датасета.
+
 ```{r}
 icc(df2_short[,-c(1)], model = "twoway", type = "agreement")
 ```
 
 ### 2.6
+
+Создайте тибл, содержащий минимальное (min) и максимальное (max) значение попарной корреляции Кендала ответов всех участников эксперимента со словами (т. е. корреляция ответов АА и AB, AA и AC и т. д.). В преобразовании матрицы, пораждаемой функцией cor() мне очень помогла функция as.table().
+
 ```{r}
 w <- data.frame(cor(df2_short[, -1], method = "kendall"))
 diag(w) <- NA
