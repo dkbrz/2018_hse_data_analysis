@@ -78,15 +78,7 @@ data_frame(p = rep(x, 3),
 ```
 Среднее:
 ```{r}
-x <- seq(0, 1, length = 100)
-data_frame(p = rep(x, 3),
-           density = c(dbeta(x, alpha_prior, beta_prior),
-                       dbeta(x, alpha_data, beta_data),
-                       dbeta(x, alpha_post, beta_post)),
-           type = rep(c("prior", "likelihood", "posterior"), each = 100)) -> w
-w %>%
-  mutate (prod = density * p) -> w
-mean(w$prod[w$type == 'posterior'])
+print (alpha_post/(alpha_post+beta_post))
 
 ```
 
@@ -114,15 +106,7 @@ beta_data <- df$n[1] - df$k[1]
 alpha_post <- alpha_prior + alpha_data
 beta_post <- beta_prior + beta_data
 
-x <- seq(0, 1, length = 100)
-data_frame(p = rep(x, 3),
-           density = c(dbeta(x, alpha_prior, beta_prior),
-                       dbeta(x, alpha_data, beta_data),
-                       dbeta(x, alpha_post, beta_post)),
-           type = rep(c("prior", "likelihood", "posterior"), each = 100)) -> w
-w %>%
-  mutate (prod = density * p) -> w
-mean(w$prod[w$type == 'posterior'])
+print (alpha_post/(alpha_post+beta_post))
 ```
 
 
