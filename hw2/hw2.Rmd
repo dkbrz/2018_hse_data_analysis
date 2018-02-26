@@ -76,8 +76,17 @@ data_frame(p = rep(x, 3),
   geom_line()+
   theme_bw()
 ```
+Среднее:
 ```{r}
-print(alpha_post/(alpha_post+beta_post))
+x <- seq(0, 1, length = 100)
+data_frame(p = rep(x, 3),
+           density = c(dbeta(x, alpha_prior, beta_prior),
+                       dbeta(x, alpha_data, beta_data),
+                       dbeta(x, alpha_post, beta_post)),
+           type = rep(c("prior", "likelihood", "posterior"), each = 100)) -> w
+w %>%
+  mutate (prod = density * p) -> w
+mean(w$prod[w$type == 'posterior'])
 
 ```
 
@@ -96,7 +105,7 @@ data_frame(p = rep(x, 3),
   geom_line()+
   theme_bw()
 ```
-
+Среднее:
 ```{r}
 alpha_prior <- 1
 beta_prior <- 1
@@ -105,7 +114,15 @@ beta_data <- df$n[1] - df$k[1]
 alpha_post <- alpha_prior + alpha_data
 beta_post <- beta_prior + beta_data
 
-print(alpha_post/(alpha_post+beta_post))
+x <- seq(0, 1, length = 100)
+data_frame(p = rep(x, 3),
+           density = c(dbeta(x, alpha_prior, beta_prior),
+                       dbeta(x, alpha_data, beta_data),
+                       dbeta(x, alpha_post, beta_post)),
+           type = rep(c("prior", "likelihood", "posterior"), each = 100)) -> w
+w %>%
+  mutate (prod = density * p) -> w
+mean(w$prod[w$type == 'posterior'])
 ```
 
 
@@ -113,4 +130,5 @@ print(alpha_post/(alpha_post+beta_post))
 Представим, что Вы пишите статью, напишите короткий абзац, который бы обобщал результаты, полученные в предыдущих заданиях. Не забывайте приводить результаты статистических тестов.
 
 ```
+
 ```
