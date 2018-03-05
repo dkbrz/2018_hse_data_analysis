@@ -68,7 +68,8 @@ sir_bin%>%
   mutate(size = up_ci - low_ci)-> sir_bin
 
 as_tibble(sir_bin) %>%
-  filter (size == max(sir_bin$size))
+  filter (size == max(sir_bin$size))%>%
+  select(chapter, average, low_ci, up_ci, size)
 
 ```
 ### 1.4
@@ -94,19 +95,22 @@ sir %>%
          ci = cred_int_h - cred_int_l) ->
   posterior
 as_tibble(posterior) %>%
-  filter (ci == max(posterior$ci))
+  filter (ci == max(posterior$ci))%>%
+  select(chapter, average, cred_int_l, cred_int_h, ci)
 ```
 ### 1.5
 Посчитайте биномиальный доверительный интервал употребления слова “сэр” в каждой главе и выведите главу с минимальным из интервалов в формате тиббл.
 ```{r}
 as_tibble(sir_bin) %>%
-  filter (size == min(sir_bin$size))
+  filter (size == min(sir_bin$size))%>%
+  select(chapter, average, low_ci, up_ci, size)
 ```
 ### 1.6
 Посчитайте байесовский биномиальный доверительный интервал употребления слова “сэр” в каждой главе и выведите главу с минимальным из интервалов в формате тиббл.
 ```{r}
 as_tibble(posterior) %>%
-  filter (ci == min(posterior$ci))
+  filter (ci == min(posterior$ci))%>%
+  select(chapter, average, cred_int_l, cred_int_h, ci)
 ```
 ### 1.7
 Напишите короткий текст, комментирующий наблюдаемые сходства/различия между оценками среднего и доверительных интервалов количества употреблений слова “сэр” во всех главах романа. Что можно сказать про разные главы? Что можно сказать о сходстве/различиях фриквентистсткой и байесовской оценок наблюдаемых параметров?
