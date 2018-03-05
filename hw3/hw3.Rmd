@@ -1,0 +1,115 @@
+---
+title: "hw_3"
+author: "Evgeniy Glazunov"
+date: '5 марта 2018 г '
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(mosaic)
+library(ggplot2)
+library(tidyverse)
+library(bootstrap)
+```
+
+```{r}
+df <- read.csv('https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw3_binomial_ci/hw3_wodehouse.csv', encoding = 'UTF-8')
+```
+
+### 1.1
+Посчитайте среднее употребление слова “сэр” по каждой главе, а потом посчитайте grand mean. Ответ выведите в формате тиббл.
+```{r}
+df <- subset(df, select = -c(2))
+
+as_tibble(df)%>%
+  group_by(chapter) %>% 
+  mutate(n_words = n()) %>%
+  filter(word == 'сэр') %>%
+  mutate(n = n())%>%
+  group_by(chapter)%>%
+  mutate(average = mean(n/n_words)) -> sir
+
+sir <- subset(sir, !duplicated(sir))
+
+grand_mean <- as_tibble(mean(sir$average))
+grand_mean
+```
+### 1.2
+Посчитайте бутстрэпом доверительный интервал для средней доли слова “сэр” в главах романа и выведите его размер в формате тиббл.
+```{r}
+sir_bs <- sir
+sir_bs <- bootstrap(sir_bs$average, nboot = 10000, theta = mean)$thetastar
+sir_bs <- data_frame(means = sir_bs)  
+
+sir_bs %>%
+  summarise(mean = mean(means),
+            q1 = quantile(means, 0.025),
+            q2 = quantile(means, 0.975))->
+  sir_stats
+sir_stats
+
+sir_bs %>% 
+  ggplot(aes(means)) +
+  geom_histogram(fill = "lightblue")+
+  theme_bw()+
+  labs(title = 'Средняя доля слова "сэр" на основе 14 глав', subtitle = "Среднее и 95% бутстрэпнутый доверительный интервал на основе 10000 бутстрэп-подвыборок")+
+  geom_vline(xintercept = unlist(sir_stats), lty = c(2, 3, 3))
+
+```
+### 1.3
+Посчитайте биномиальный доверительный интервал употребления слова “сэр” в каждой главе и выведите главу с максимальным из интервалов в формате тиббл.
+```{r}
+sir %>% 
+  mutate(low_ci = binom.test(x = n, n = n_words, ci.method = "Clopper-Pearson")$conf.int[1],
+         up_ci = binom.test(x = n, n = n_words, ci.method = "Clopper-Pearson")$conf.int[2]) -> sir_bin
+
+sir_bin%>%
+  mutate(size = up_ci - low_ci)-> sir_bin
+
+as_tibble(sir_bin) %>%
+  filter (size == max(sir_bin$size))
+
+```
+### 1.4
+Посчитайте байесовский биномиальный доверительный интервал употребления слова “сэр” в каждой главе и выведите главу с максимальным из интервалов в формате тиббл.
+```{r}
+mu <- mean(sir$average)
+var <- var(sir$average)
+alpha0 <- ((1 - mu) / var - 1 / mu) * mu ^ 2
+beta0 <- alpha0 * (1 / mu - 1)
+alpha0
+beta0
+x <- seq(0, 0.1, length = 1000)
+estimation <- data_frame(
+  x = x,
+  density = c(dbeta(x, shape1 = alpha0, shape2 = beta0)))
+
+sir %>% 
+  mutate(alpha_post = n+alpha0,
+         beta_post = n_words-n+beta0,
+         average_post = alpha_post/(alpha_post+beta_post),
+         cred_int_l = qbeta(.025, alpha_post, beta_post),
+         cred_int_h = qbeta(.975, alpha_post, beta_post),
+         ci = cred_int_h - cred_int_l) ->
+  posterior
+as_tibble(posterior) %>%
+  filter (ci == max(posterior$ci))
+```
+### 1.5
+Посчитайте биномиальный доверительный интервал употребления слова “сэр” в каждой главе и выведите главу с минимальным из интервалов в формате тиббл.
+```{r}
+as_tibble(sir_bin) %>%
+  filter (size == min(sir_bin$size))
+```
+### 1.6
+Посчитайте байесовский биномиальный доверительный интервал употребления слова “сэр” в каждой главе и выведите главу с минимальным из интервалов в формате тиббл.
+```{r}
+as_tibble(posterior) %>%
+  filter (ci == min(posterior$ci))
+```
+### 1.7
+Напишите короткий текст, комментирующий наблюдаемые сходства/различия между оценками среднего и доверительных интервалов количества употреблений слова “сэр” во всех главах романа. Что можно сказать про разные главы? Что можно сказать о сходстве/различиях фриквентистсткой и байесовской оценок наблюдаемых параметров?
+```
+
+```
