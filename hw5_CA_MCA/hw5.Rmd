@@ -1,0 +1,56 @@
+---
+title: "hw5_CA_MCA"
+author: "Evgenii Glazunov"
+date: '19 марта 2018 г '
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+library(ca)
+library(ggplot2)
+library(tidyverse)
+```
+```{r}
+df <- read.csv('https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw5_CA_MCA/hw5_chairs.csv', encoding = 'UTF-8')
+```
+### 1.1
+```{r}
+MCA <- MASS::mca(df[,-c(1, 2, 3)])
+df <- cbind(df, MCA$rs)
+variables <- as_data_frame(MCA$cs)
+variables$var_names <- rownames(MCA$cs)
+df %>% 
+  ggplot(aes(`1`, `2`))+
+  geom_text(data = variables, aes(`1`, `2`, label = var_names))+
+  geom_point(aes(color = Category))+
+  stat_ellipse(aes(color = Category))+
+  theme_bw()+
+  scale_x_continuous(limits = c(-0.015, 0.02))
+```
+
+### 1.2
+Они пересекаются, но не очень сильно. Разница есть.
+
+### 2.1
+```{r}
+df2 <- read.csv('https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw5_CA_MCA/hw5_colreg.csv', encoding = 'UTF-8')
+```
+```{r}
+ca <- ca(df2)
+df2_col <- data.frame(ca$colcoord)
+df2_col$rows <- rownames(ca$colcoord)
+
+df2_row <- data.frame(ca$rowcoord)
+df2_row$rows <- c(1:11)
+
+df2_col %>% 
+  ggplot(aes(Dim1, Dim2, label = rows))+
+  geom_text(color = "blue")+
+  geom_text(data = df2_row, color = "red")+
+  theme_bw()+
+  labs(x = "Dim1 (42.1%)",
+       y = "Dim2 (32.6%)")
+```
+
+### 2.2
+?
