@@ -21,7 +21,7 @@ variables <- as_data_frame(MCA$cs)
 variables$var_names <- rownames(MCA$cs)
 df %>% 
   ggplot(aes(`1`, `2`))+
-  geom_text(data = variables, aes(`1`, `2`, label = var_names))+
+  geom_text(data = variables, aes(`1`, `2`, label = var_names),size=2)+
   geom_point(aes(color = Category))+
   stat_ellipse(aes(color = Category))+
   theme_bw()+
@@ -29,28 +29,32 @@ df %>%
 ```
 
 ### 1.2
-Они пересекаются, но не очень сильно. Разница есть.
+Они пересекаются, но не очень сильно. Разница есть. Cуществуют параметры, которые скорее присущи креслу или стулу. Например, дополнительная функция "быть кроватью" присуща креслу, что интуитивно так (кресло-кровать), глубина, предназначение для отдыха. 
 
-### 2.1
+
 ```{r}
 df2 <- read.csv('https://raw.githubusercontent.com/agricolamz/2018_data_analysis_for_linguists/master/data/students/dkbrz/hw5_CA_MCA/hw5_colreg.csv', encoding = 'UTF-8')
 ```
+
+### 2.1
 ```{r}
-ca <- ca(df2)
+ca <- ca(df2[-5])
+ca
 df2_col <- data.frame(ca$colcoord)
 df2_col$rows <- rownames(ca$colcoord)
 
 df2_row <- data.frame(ca$rowcoord)
-df2_row$rows <- c(1:11)
+df2_row$rows <- df2$colors
 
 df2_col %>% 
   ggplot(aes(Dim1, Dim2, label = rows))+
   geom_text(color = "blue")+
   geom_text(data = df2_row, color = "red")+
   theme_bw()+
-  labs(x = "Dim1 (42.1%)",
-       y = "Dim2 (32.6%)")
+  labs(x = "Dim1 (77.86%)",
+       y = "Dim2 (19.21%)")
 ```
 
 ### 2.2
-?
+
+Академический текст довольно далек от цветов (противоположное направление от основного блока цветов, что логично, так как для этого типа тексат адъективное употребление цветов нехарактерно), с разговорным и академическим близки базовые цвета (черный и белый), а более литературынм (фикшн и пресса) соответствуют более детальные цветоописания, причем основная часть в фикшн, так как это наиболее литературны и описательный жанр.
